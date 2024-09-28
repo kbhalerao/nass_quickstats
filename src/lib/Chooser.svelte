@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	export let selector = {};
-	export let choices = [];
+	export let choices = ['Wait'];
 	export let updater;
 	export let search_params = {};
 	let selection = [];
@@ -53,10 +53,11 @@
 <style>
 	.container {
 		margin: 0.25rem;
-		max-width: 20vw;
+		width: 24vw;
+		max-width: 24vw;
 	}
 	select {
-		max-width: inherit;
+		width: 100%;
 		overflow: auto;
 	}
 </style>
