@@ -1,5 +1,5 @@
 <script>
-	const MAX_RECORDS = 5000;
+	const MAX_RECORDS = 50000;
 	export let search_params;
 	export let table;
 	$: searchstring = ((sp) => {
@@ -34,6 +34,8 @@
 		<span>{result.count.toLocaleString()} records</span>
 		{#if result.count <= MAX_RECORDS}
 			<button on:click={get_data}>Get data</button>
+		{:else}
+			<span>Too many records. Filter to below 50,000 to download</span>
 		{/if}
 	{/await}
 </div>

@@ -14,12 +14,16 @@
 		return str.join(', ');
 	};
 
+	const make_filename = () => {
+		const dt = new Date();
+		return `nass_${dt.getTime()}.csv`;
+	};
 	function download() {
 		const a = document.createElement('a');
 		const blob = new Blob([table], { type: 'csv' });
 		const url = URL.createObjectURL(blob);
 		a.setAttribute('href', url);
-		a.setAttribute('download', 'nass.csv');
+		a.setAttribute('download', make_filename());
 		a.click();
 	}
 </script>
