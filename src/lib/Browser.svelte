@@ -117,9 +117,6 @@
 	.selector-group {
 		display: flex;
 	}
-	h3 {
-		text-transform: capitalize;
-	}
 	.selector-group {
 		max-width: 100vw;
 		display: flex;
