@@ -2,7 +2,7 @@
 	import Browser from '$lib/Browser.svelte';
 </script>
 
-<h1>NASS <i>Quicker</i>Stats Browser</h1>
+<h1>NASS <i>Quicker</i>Stats Browser by AgSci LLC</h1>
 <Browser />
 <p>All data courtey of <a href="https://quickstats.nass.usda.gov/">USDA NASS</a></p>
 <p>
