@@ -3,6 +3,9 @@
 </script>
 
 <h1>NASS <i>Quicker</i>Stats Browser</h1>
-<p>You will need your own API key in the .env file under the key PRIVATE_QUICKSTATS_API_KEY</p>
 <Browser />
 <p>All data courtey of <a href="https://quickstats.nass.usda.gov/">USDA NASS</a></p>
+<p>
+	Replicate this project. you will need your own API key from NASS in the .env file under the key
+	PRIVATE_QUICKSTATS_API_KEY
+</p>

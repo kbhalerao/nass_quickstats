@@ -70,7 +70,7 @@
 </div>
 {#if table?.length}
 	<div class="container">
-		<Table {table} />
+		<Table {search_params} {table} />
 	</div>
 {/if}
 
