@@ -7,38 +7,77 @@
 		{
 			key: 'source_desc',
 			name: 'Program',
-			depends: null,
+			depends: ['year'],
 			group: 'what'
 		},
 		{
 			key: 'sector_desc',
 			name: 'Sector',
-			depends: ['source_desc'],
+			depends: ['year', 'source_desc'],
 			group: 'what'
 		},
 		{
 			key: 'group_desc',
 			name: 'Group',
-			depends: ['sector_desc'],
+			depends: ['year', 'source_desc', 'sector_desc'],
 			dependency: 'hard',
 			group: 'what'
 		},
 		{
 			key: 'commodity_desc',
 			name: 'Commodity',
-			depends: ['source_desc', 'sector_desc', 'group_desc'],
+			depends: ['year', 'source_desc', 'sector_desc', 'group_desc'],
+			group: 'what'
+		},
+		{
+			key: 'class_desc',
+			name: 'Class',
+			depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc'],
+			group: 'what'
+		},
+		{
+			key: 'prodn_practice_desc',
+			name: 'Production Practice',
+			depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc', 'class_desc'],
+			group: 'what'
+		},
+		{
+			key: 'util_practice_desc',
+			name: 'Utilization',
+			depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc', 'class_desc'],
+			group: 'what'
+		},
+		{
+			key: 'statisticcat_desc',
+			name: 'Category',
+			depends: [
+				'year',
+				'source_desc',
+				'sector_desc',
+				'group_desc',
+				'commodity_desc',
+				'class_desc',
+				'prodn_practice_desc',
+				'util_practice_desc'
+			],
+			group: 'what'
+		},
+		{
+			key: 'unit_desc',
+			name: 'Units',
+			depends: ['statisticcat_desc'],
 			group: 'what'
 		},
 		{
 			key: 'state_name',
 			name: 'State',
-			depends: null,
+			depends: ['year'],
 			group: 'where'
 		},
 		{
 			key: 'county_name',
 			name: 'County',
-			depends: ['state_name'],
+			depends: ['state_name', 'year'],
 			dependency: 'hard',
 			group: 'where'
 		},
@@ -80,5 +119,10 @@
 	}
 	h3 {
 		text-transform: capitalize;
+	}
+	.selector-group {
+		max-width: 100vw;
+		display: flex;
+		flex-wrap: wrap;
 	}
 </style>

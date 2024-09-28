@@ -32,7 +32,7 @@
 			let res = await fetch(`/api/options?${search}`);
 			res = await res.json();
 			choices = res[selector.key];
-			selection = [];
+			selection = selection.filter((s) => choices.indexOf(s) > -1);
 		}
 	};
 
@@ -42,7 +42,7 @@
 </script>
 
 <div class="container">
-	<label for={selector.key}>{selector.name}</label><br />
+	<label for={selector.key}>{selector.name} {selection.join('; ')}</label><br />
 	<select name={selector.key} id={selector.key} bind:value={selection} multiple>
 		{#each choices as choice (choice)}
 			<option value={choice}>{choice}</option>
@@ -53,5 +53,10 @@
 <style>
 	.container {
 		margin: 0.25rem;
+		max-width: 20vw;
+	}
+	select {
+		max-width: inherit;
+		overflow: auto;
 	}
 </style>
