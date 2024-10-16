@@ -2,17 +2,11 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 
-	export let selector = {};
-	export let choices = ['Wait'];
-	export let updater;
-	export let search_params = {};
-	let selection = [];
+	let { selector, updater, search_params = $bindable() } = $props();
+	let choices = $state(['Wait']);
+	let selection = $state([]);
 
-	$: (() => {
-		updater(selector.key, selection);
-	})(selection);
-
-	$: search_string = ((search) => {
+	const makeSearchString = (search) => {
 		const pars = new URLSearchParams();
 		for (const key of Object.keys(search)) {
 			if (search[key].length && selector.depends?.indexOf(key) > -1) {
@@ -23,9 +17,13 @@
 		}
 		pars.append('param', selector.key);
 		return pars.toString();
-	})(search_params);
+	};
 
-	$: ((s) => get_choices(s))(search_string);
+	let search_string = $derived(makeSearchString(search_params));
+
+	$effect(() => {
+		get_choices(search_string);
+	});
 
 	const get_choices = async (search) => {
 		if (browser) {
@@ -41,9 +39,15 @@
 	});
 </script>
 
-<div class="container">
+<div class="w-80 m-1">
 	<label for={selector.key}>{selector.name} {selection.join('; ')}</label><br />
-	<select name={selector.key} id={selector.key} bind:value={selection} multiple>
+	<select
+		name={selector.key}
+		id={selector.key}
+		bind:value={selection}
+		onchange={() => updater(selector.key, selection)}
+		multiple
+	>
 		{#each choices as choice (choice)}
 			<option value={choice}>{choice}</option>
 		{/each}
@@ -51,11 +55,6 @@
 </div>
 
 <style>
-	.container {
-		margin: 0.25rem;
-		width: 24vw;
-		max-width: 24vw;
-	}
 	select {
 		width: 100%;
 		overflow: auto;

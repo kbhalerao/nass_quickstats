@@ -1,10 +1,9 @@
 <script>
-	export let table;
-	export let search_params;
+	let { table, search_params } = $props();
 
-	$: lines = table.split('\n');
-	$: header = lines[0].split(',');
-	$: body = lines.slice(1, 10);
+	let lines = $derived(table.split('\n'));
+	let header = $derived(lines[0].split(','));
+	let body = $derived(lines.slice(1, 10));
 
 	const make_caption = (s) => {
 		let str = [];
@@ -29,7 +28,10 @@
 </script>
 
 <div class="container">
-	<button on:click={download}>Download CSV</button>
+	<button
+		class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+		onclick={download}>Download CSV</button
+	>
 	<table>
 		<caption>Params {make_caption(search_params)}, showing up to 10 rows</caption>
 		<thead>
@@ -52,10 +54,6 @@
 </div>
 
 <style>
-	.container {
-		width: 100%;
-		overflow-y: scroll;
-	}
 	td {
 		text-transform: capitalize;
 	}
