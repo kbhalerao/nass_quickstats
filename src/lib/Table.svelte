@@ -30,7 +30,7 @@
 <div class="container">
 	<button
 		class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
-		onclick={download}>Download CSV</button
+		onclick={download}>Download CSV (all {lines.length - 2} rows)</button
 	>
 	<table>
 		<caption>Params {make_caption(search_params)}, showing up to 10 rows</caption>
@@ -63,5 +63,6 @@
 		width: inherit;
 		border: 1px solid black;
 		border-collapse: collapse;
+		font-size: small;
 	}
 </style>

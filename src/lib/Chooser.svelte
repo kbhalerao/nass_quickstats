@@ -4,7 +4,8 @@
 
 	let { selector, updater, search_params = $bindable() } = $props();
 	let choices = $state(['Wait']);
-	let selection = $state([]);
+	let selection = $state(selector.default ?? []);
+	let tooltip = $derived(`${selector.description}. Depends on ${selector.depends?.join(', ')}`);
 
 	const makeSearchString = (search) => {
 		const pars = new URLSearchParams();
@@ -39,18 +40,27 @@
 	});
 </script>
 
-<div class="w-80 m-1">
-	<label for={selector.key}>{selector.name} {selection.join('; ')}</label><br />
+<div class="w-80 m-1 p-4">
+	<label for={selector.key}
+		><span class="font-semibold">{selector.name}</span> ({choices.length}): {selection.join('; ')}
+		<span class="float-right" title={tooltip}>?</span>
+	</label>
+	<br />
 	<select
 		name={selector.key}
 		id={selector.key}
+		disabled={choices.length < 1}
 		bind:value={selection}
 		onchange={() => updater(selector.key, selection)}
 		multiple
 	>
-		{#each choices as choice (choice)}
-			<option value={choice}>{choice}</option>
-		{/each}
+		{#if choices.length > 0}
+			{#each choices as choice (choice)}
+				<option value={choice}>{choice}</option>
+			{/each}
+		{:else}
+			<option value={null}>No options</option>
+		{/if}
 	</select>
 </div>
 

@@ -12,7 +12,7 @@ export const selectors = [
 		name: 'Sector',
 		depends: ['year', 'source_desc'],
 		group: 'what',
-		default: null,
+		default: [],
 		description:
 			'Five high level, broad categories useful to narrow down choices (Crops, Animals & Products, Economics, Demographics, and Environmental).'
 	},
@@ -22,7 +22,7 @@ export const selectors = [
 		depends: ['year', 'source_desc', 'sector_desc'],
 		dependency: 'hard',
 		group: 'what',
-		default: null,
+		default: [],
 		description:
 			'Subsets within sector (e.g., under sector = Crops, the groups are Field Crops, Fruit & Tree Nuts, Horticulture, and Vegetables).'
 	},
@@ -31,7 +31,7 @@ export const selectors = [
 		name: 'Commodity',
 		depends: ['year', 'source_desc', 'sector_desc', 'group_desc'],
 		group: 'what',
-		default: null,
+		default: [],
 		description: 'The primary subject of interest (e.g., CORN, CATTLE, LABOR, TRACTORS, OPERATORS).'
 	},
 	{
@@ -39,7 +39,7 @@ export const selectors = [
 		name: 'Class',
 		depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc'],
 		group: 'what',
-		default: null,
+		default: [],
 		description:
 			'Generally a physical attribute (e.g., variety, size, color, gender) of the commodity.'
 	},
@@ -48,7 +48,7 @@ export const selectors = [
 		name: 'Production Practice',
 		depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc', 'class_desc'],
 		group: 'what',
-		default: null,
+		default: [],
 		description:
 			'A method of production or action taken on the commodity (e.g., IRRIGATED, ORGANIC, ON FEED).'
 	},
@@ -57,7 +57,7 @@ export const selectors = [
 		name: 'Utilization',
 		depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc', 'class_desc'],
 		group: 'what',
-		default: null,
+		default: [],
 		descriptions:
 			'Utilizations (e.g., GRAIN, FROZEN, SLAUGHTER) or marketing channels (e.g., FRESH MARKET, PROCESSING, RETAIL).'
 	},
@@ -75,7 +75,7 @@ export const selectors = [
 			'util_practice_desc'
 		],
 		group: 'what',
-		default: null,
+		default: [],
 		description:
 			'The aspect of a commodity being measured (e.g., AREA HARVESTED, PRICE RECEIVED, INVENTORY, SALES).'
 	},
@@ -84,6 +84,7 @@ export const selectors = [
 		name: 'Units',
 		depends: ['statisticcat_desc'],
 		group: 'what',
+		default: [],
 		description:
 			'The unit associated with the statistic category (e.g., ACRES, $ / LB, HEAD, $, OPERATIONS).'
 	},
@@ -92,6 +93,7 @@ export const selectors = [
 		name: 'Geographic Level',
 		depends: ['year'],
 		group: 'where',
+		default: ['COUNTY'],
 		description:
 			'Aggregation level or geographic granularity of the data (e.g., State, Ag District, County, Region, Zip Code).'
 	},
@@ -100,6 +102,7 @@ export const selectors = [
 		name: 'State',
 		depends: ['year', 'agg_level_desc'],
 		group: 'where',
+		default: [],
 		description: 'State full name.'
 	},
 	{
@@ -107,6 +110,7 @@ export const selectors = [
 		name: 'Region',
 		depends: ['year', 'agg_level_desc'],
 		group: 'where',
+		default: [],
 		description:
 			'NASS defined geographic entities not readily defined by other standard geographic levels. A region can be a less than a state (Sub-State) or a group of states (Multi-State), and may be specific to a commodity.'
 	},
@@ -116,6 +120,7 @@ export const selectors = [
 		depends: ['agg_level_desc', 'state_name', 'year'],
 		dependency: 'hard',
 		group: 'where',
+		default: [],
 		description: 'County Name.'
 	},
 	{
@@ -123,13 +128,15 @@ export const selectors = [
 		name: 'Ag District',
 		depends: ['agg_level_desc', 'state'],
 		group: 'where',
+		default: [],
 		description: 'Ag statistics district name.'
 	},
 	{
 		key: 'zip_5',
 		name: 'Zip code',
-		depends: ['state'],
+		depends: ['state_name'],
 		group: 'where',
+		default: [],
 		description: 'US Postal Service 5-digit zip code.'
 	},
 	{
@@ -137,6 +144,7 @@ export const selectors = [
 		name: 'Watershed',
 		depends: ['agg_level_desc'],
 		group: 'where',
+		default: [],
 		description:
 			'Name assigned to the US Geological Survey (USGS) 8-digit Hydrologic Unit Code (HUC) watershed.'
 	},
@@ -144,7 +152,9 @@ export const selectors = [
 		key: 'year',
 		name: 'Year',
 		depends: null,
-		group: 'when'
+		default: [],
+		group: 'when',
+		description: 'Years'
 	}
 ];
 

@@ -9,6 +9,7 @@
 	let search_params = $state({});
 
 	const update_search_params = (key, selection) => {
+		console.log({ key, selection });
 		search_params[key] = selection;
 	};
 </script>
