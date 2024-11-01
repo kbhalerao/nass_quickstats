@@ -58,7 +58,9 @@ self.addEventListener('fetch', (event) => {
 				if (response) {
 					return response;
 				}
-			} catch (err) {}
+			} catch (e) {
+				console.warn(e);
+			}
 		}
 
 		// for everything else, try the network first, but

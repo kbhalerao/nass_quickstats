@@ -1,5 +1,4 @@
 import { PRIVATE_QUICKSTATS_API_KEY } from '$env/static/private';
-import { json } from '@sveltejs/kit';
 const BASE = 'https://quickstats.nass.usda.gov/api/api_GET/';
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
