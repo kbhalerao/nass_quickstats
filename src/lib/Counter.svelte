@@ -40,7 +40,7 @@
 	}
 </script>
 
-<svelte:window on:copysuccess={copySuccess} on:copyerror={copyError} />
+<svelte:window oncopysuccess={copySuccess} oncopyerror={copyError} />
 
 <div class="container">
 	{#await count}
