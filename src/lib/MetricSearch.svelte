@@ -26,10 +26,10 @@
 		return '%' + terms.map((t) => t.toUpperCase()).join('%') + '%';
 	}
 
-	let target_query = $derived(query);
+	// Debounce typing into `active_query`.
 	let active_query = $state('');
 	$effect(() => {
-		const next = target_query;
+		const next = query;
 		if (next === active_query) return;
 		const t = setTimeout(() => {
 			active_query = next;
@@ -37,28 +37,36 @@
 		return () => clearTimeout(t);
 	});
 
-	$effect(() => {
-		if (!browser) return;
+	// Compute the request URL as a $derived so re-fetching only happens when the
+	// *string* actually changes. Without this, the fetch effect re-runs on every
+	// search_params mutation (including the trim-invalid-selections churn from
+	// every Chooser as the cascade loads), cancelling each fetch before it
+	// resolves — so the user never sees results.
+	const search_qs = $derived.by(() => {
 		const q = active_query.trim();
-		if (q.length < 2) {
-			results = [];
-			loading = false;
-			return;
-		}
+		if (q.length < 2) return null;
 		const pattern = termsToLikePattern(q);
-		// Don't include short_desc itself in `only` — we want any other filters
-		// the user has set to also narrow the metric search.
-		const qs = buildSearchString(
+		return buildSearchString(
 			{ ...search_params, short_desc: [], short_desc__LIKE: [pattern] },
 			{
-				// Allow-list everything that exists in search_params so the metric
-				// search respects current filters (year range, sector, etc.).
+				// Allow-list everything in search_params so the metric search
+				// respects current filters (year range, sector, etc.).
 				only: Object.keys(search_params)
 					.map((k) => k.replace(/__(GE|GT|LE|LT|NE|LIKE|NOT_LIKE)$/, ''))
 					.concat(['short_desc']),
 				extra: { param: 'short_desc' }
 			}
 		);
+	});
+
+	$effect(() => {
+		if (!browser) return;
+		const qs = search_qs;
+		if (qs === null) {
+			results = [];
+			loading = false;
+			return;
+		}
 		let cancelled = false;
 		loading = true;
 		fetchOptions(qs)
