@@ -163,21 +163,25 @@
 		disabled={pairs.length === 0}
 	/>
 
+	<!--
+		Sized to roughly match a native <select size="10"> with text-sm so the
+		tile matches the other Choosers visually. leading-tight + minimal
+		padding aligns row height with browser-native <option> rendering.
+	-->
 	<div
-		class="flex-1 border border-gray-300 rounded text-sm font-mono overflow-y-auto bg-white"
-		style="max-height: 16rem; min-height: 12rem"
+		class="h-[15rem] border border-gray-300 rounded text-sm font-mono overflow-y-auto bg-white"
 	>
 		{#if loading}
-			<div class="p-2 text-gray-400">Loading…</div>
+			<div class="px-1 py-0.5 text-gray-400">Loading…</div>
 		{:else if filtered.length === 0}
-			<div class="p-2 text-gray-400">
+			<div class="px-1 py-0.5 text-gray-400">
 				{pairs.length === 0 ? 'No options' : `No matches for "${filter}"`}
 			</div>
 		{:else}
 			{#each filtered as p (`${p.stat}|${p.unit}`)}
 				<button
 					type="button"
-					class="w-full text-left px-2 py-1 hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
+					class="block w-full text-left px-1 leading-tight hover:bg-blue-50"
 					class:bg-blue-100={isSelected(p)}
 					onclick={() => togglePair(p)}
 				>
