@@ -6,6 +6,19 @@
 	const MAX_RESULTS = 50;
 	const DEBOUNCE_MS = 250;
 
+	// Filters that *define what the metric is* — they get cleared from the
+	// search because the user is using metric search to redefine them. Filters
+	// that contextualise the metric (when, where, source, sector) still narrow.
+	const METRIC_DEFINING_KEYS = new Set([
+		'commodity_desc',
+		'class_desc',
+		'prodn_practice_desc',
+		'util_practice_desc',
+		'statisticcat_desc',
+		'unit_desc',
+		'short_desc'
+	]);
+
 	let { search_params = $bindable() } = $props();
 
 	let query = $state('');
@@ -23,7 +36,10 @@
 		// SQL LIKE: % is the wildcard. Wrapping with %term1%term2%... matches
 		// any short_desc that contains all terms in order. The NASS LIKE filter
 		// is case-insensitive against uppercase short_desc values.
-		return '%' + terms.map((t) => t.toUpperCase()).join('%') + '%';
+		// Naive stem: drop a trailing 's' so "yields" matches "YIELD",
+		// "operations" matches "OPERATION", etc.
+		const stem = (t) => (t.length >= 4 && t.endsWith('s') ? t.slice(0, -1) : t);
+		return '%' + terms.map((t) => stem(t.toUpperCase())).join('%') + '%';
 	}
 
 	// Debounce typing into `active_query`.
@@ -46,12 +62,22 @@
 		const q = active_query.trim();
 		if (q.length < 2) return null;
 		const pattern = termsToLikePattern(q);
+
+		// Strip metric-defining filters: the user is using this search to
+		// redefine the metric, so commodity / stat / unit / class / practice
+		// values from prior selections must not constrain it. Year, source,
+		// sector, group, and geo filters DO still narrow.
+		const contextual = {};
+		for (const k of Object.keys(search_params)) {
+			const base = k.replace(/__(GE|GT|LE|LT|NE|LIKE|NOT_LIKE)$/, '');
+			if (METRIC_DEFINING_KEYS.has(base)) continue;
+			contextual[k] = search_params[k];
+		}
+
 		return buildSearchString(
-			{ ...search_params, short_desc: [], short_desc__LIKE: [pattern] },
+			{ ...contextual, short_desc__LIKE: [pattern] },
 			{
-				// Allow-list everything in search_params so the metric search
-				// respects current filters (year range, sector, etc.).
-				only: Object.keys(search_params)
+				only: Object.keys(contextual)
 					.map((k) => k.replace(/__(GE|GT|LE|LT|NE|LIKE|NOT_LIKE)$/, ''))
 					.concat(['short_desc']),
 				extra: { param: 'short_desc' }
