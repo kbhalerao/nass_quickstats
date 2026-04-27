@@ -7,6 +7,14 @@
 const MODIFIER_RE = /__(GE|GT|LE|LT|NE|LIKE|NOT_LIKE)$/;
 
 /**
+ * Filter keys that always flow through to every NASS request, regardless of a
+ * selector's `depends` list. `short_desc` is the canonical example: when the
+ * Find-a-metric search picks a specific short_desc, every cascade fetch should
+ * narrow accordingly even though no other selector declares it as a dep.
+ */
+const GLOBAL_KEYS = new Set(['short_desc']);
+
+/**
  * @param {string} key
  * @returns {string} the bare param name with any NASS modifier suffix stripped.
  */
@@ -31,7 +39,8 @@ export function buildSearchString(search_params, options = {}) {
 	const { only, extra } = options;
 	const pars = new URLSearchParams();
 	for (const key of Object.keys(search_params ?? {})) {
-		if (only && !only.includes(baseParam(key))) continue;
+		const base = baseParam(key);
+		if (only && !only.includes(base) && !GLOBAL_KEYS.has(base)) continue;
 		const values = search_params[key];
 		if (!values?.length) continue;
 		for (const v of values) {

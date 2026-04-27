@@ -4,6 +4,7 @@
 	import Chooser from './Chooser.svelte';
 	import Counter from './Counter.svelte';
 	import HR from './HR.svelte';
+	import MetricSearch from './MetricSearch.svelte';
 	import RangeChooser from './RangeChooser.svelte';
 	import StatisticUnitChooser from './StatisticUnitChooser.svelte';
 	import Table from './Table.svelte';
@@ -49,6 +50,8 @@
 
 <div class="max-w-screen-2xl mx-auto">
 	<Counter {search_params} bind:table />
+
+	<MetricSearch bind:search_params />
 
 	{#each ['what', 'slice', 'where', 'when'] as group (group)}
 		<HR text={groups[group]} />

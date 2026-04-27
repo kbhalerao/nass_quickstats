@@ -63,6 +63,24 @@ describe('buildSearchString', () => {
 		expect(params.getAll('state_name')).toEqual(['IOWA', 'OHIO', 'TEXAS']);
 	});
 
+	it('always passes short_desc through, regardless of `only`', () => {
+		const search = {
+			short_desc: ['CORN, GRAIN - YIELD, MEASURED IN BU / ACRE'],
+			year: ['2023'],
+			state_name: ['IOWA']
+		};
+		// state_name selector wouldn't normally include short_desc in its deps,
+		// but the metric search should still narrow the cascade.
+		const qs = buildSearchString(search, {
+			only: ['year', 'agg_level_desc'],
+			extra: { param: 'state_name' }
+		});
+		const p = new URLSearchParams(qs);
+		expect(p.get('short_desc')).toBe('CORN, GRAIN - YIELD, MEASURED IN BU / ACRE');
+		expect(p.get('year')).toBe('2023');
+		expect(p.has('state_name')).toBe(false); // not in `only`
+	});
+
 	it('passes year__GE / year__LE through when `only` allows year', () => {
 		const search = {
 			year__GE: ['2020'],
