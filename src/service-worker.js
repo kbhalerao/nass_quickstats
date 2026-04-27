@@ -1,8 +1,10 @@
 /// <reference types="@sveltejs/kit" />
 import { build, files, version } from '$service-worker';
 
-// Create a unique cache name for this deployment
-const CACHE = `cache-${version}`;
+// Bump this when you need to invalidate caches across an existing user base
+// even when `version` (per-build hash) hasn't changed.
+const SW_REVISION = 2;
+const CACHE = `cache-${version}-${SW_REVISION}`;
 
 const ASSETS = [
 	...build, // the app itself
@@ -10,7 +12,6 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-	// Create a new cache and add all files to it
 	self.skipWaiting();
 
 	async function addFilesToCache() {
@@ -22,72 +23,49 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-	// Remove previous cached data from disk
-	async function deleteOldCaches() {
+	async function takeOver() {
 		for (const key of await caches.keys()) {
 			if (key !== CACHE) await caches.delete(key);
 		}
+		// Claim open clients so the new SW serves them immediately rather than
+		// waiting for the next reload — important when previous revisions cached
+		// /api/* responses we want to stop serving.
+		await self.clients.claim();
 	}
 
-	event.waitUntil(deleteOldCaches());
+	event.waitUntil(takeOver());
 });
 
 self.addEventListener('fetch', (event) => {
-	// ignore POST requests etc
 	if (event.request.method !== 'GET') return;
 	if (!event.request.url.startsWith('http')) return;
 
+	const url = new URL(event.request.url);
+
+	// API requests must NEVER be served from cache: NASS responses change as
+	// data is published, and our /api/options dedup is already handled in
+	// options_client.js with in-memory promise sharing. Caching at this layer
+	// caused stale empty results to persist across sessions.
+	if (url.pathname.startsWith('/api/')) return;
+
 	async function respond() {
-		const url = new URL(event.request.url);
 		const cache = await caches.open(CACHE);
 
-		// `build`/`files` can always be served from the cache
+		// Static build assets are content-hashed by Vite — cache-first is safe.
 		if (ASSETS.includes(url.pathname)) {
-			const response = await cache.match(url.pathname);
-
-			if (response) {
-				return response;
-			}
+			const cached = await cache.match(url.pathname);
+			if (cached) return cached;
 		}
 
-		if (url.pathname.includes('/api/options')) {
-			// console.log(url.pathname);
-			try {
-				const response = await cache.match(event.request);
-
-				if (response) {
-					return response;
-				}
-			} catch (e) {
-				console.warn(e);
-			}
-		}
-
-		// for everything else, try the network first, but
-		// fall back to the cache if we're offline
+		// Network-first for everything else, with cache as offline fallback.
 		try {
 			const response = await fetch(event.request);
-
-			// if we're offline, fetch can return a value that is not a Response
-			// instead of throwing - and we can't pass this non-Response to respondWith
-			if (!(response instanceof Response)) {
-				throw new Error('invalid response from fetch');
-			}
-
-			if (response.status === 200) {
-				cache.put(event.request, response.clone());
-			}
-
+			if (!(response instanceof Response)) throw new Error('invalid response from fetch');
+			if (response.status === 200) cache.put(event.request, response.clone());
 			return response;
 		} catch (err) {
-			const response = await cache.match(event.request);
-
-			if (response) {
-				return response;
-			}
-
-			// if there's no cache, then just error out
-			// as there is nothing we can do to respond to this request
+			const cached = await cache.match(event.request);
+			if (cached) return cached;
 			throw err;
 		}
 	}
