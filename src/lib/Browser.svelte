@@ -33,7 +33,7 @@
 <div class="max-w-screen-2xl mx-auto">
 	<Counter {search_params} bind:table />
 
-	{#each ['what', 'where', 'when'] as group (group)}
+	{#each ['what', 'slice', 'where', 'when'] as group (group)}
 		<HR text={groups[group]} />
 		<div class="grid gap-3 grid-cols-[repeat(auto-fill,minmax(360px,1fr))]">
 			{#each selectors.filter((s) => s.group === group) as selector (selector.key)}

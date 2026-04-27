@@ -89,6 +89,31 @@ export const selectors = [
 			'The unit associated with the statistic category (e.g., ACRES, $ / LB, HEAD, $, OPERATIONS).'
 	},
 	{
+		key: 'domain_desc',
+		name: 'Domain',
+		depends: ['year', 'source_desc', 'sector_desc', 'group_desc', 'commodity_desc'],
+		group: 'slice',
+		default: [],
+		description:
+			'An additional dimension along which the metric is sliced — e.g. ECONOMIC CLASS, AGE, NAICS CLASSIFICATION, FARM SALES. Pick TOTAL (the default in the data) for an unsliced view.'
+	},
+	{
+		key: 'domaincat_desc',
+		name: 'Domain Category',
+		depends: [
+			'year',
+			'source_desc',
+			'sector_desc',
+			'group_desc',
+			'commodity_desc',
+			'domain_desc'
+		],
+		group: 'slice',
+		default: [],
+		description:
+			'The specific bucket within the chosen domain (e.g. for domain ECONOMIC CLASS, the category is the income bracket).'
+	},
+	{
 		key: 'agg_level_desc',
 		name: 'Geographic Level',
 		depends: ['year'],
@@ -159,7 +184,8 @@ export const selectors = [
 ];
 
 export const groups = {
-	what: 'Filter down to the key statistics you want extract from NASS',
+	what: 'Filter down to the key statistics you want to extract from NASS',
+	slice: 'Optionally slice the metric by a demographic or business dimension',
 	where: 'Narrow down the geographical extent of your search',
 	when: 'Limit your search to a window of time'
 };
