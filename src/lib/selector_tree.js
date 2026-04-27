@@ -180,6 +180,39 @@ export const selectors = [
 		default: [],
 		group: 'when',
 		description: 'Years'
+	},
+	{
+		key: 'freq_desc',
+		name: 'Frequency',
+		depends: [
+			'year',
+			'source_desc',
+			'sector_desc',
+			'group_desc',
+			'commodity_desc',
+			'statisticcat_desc'
+		],
+		group: 'when',
+		default: [],
+		description:
+			'How often NASS publishes this metric (ANNUAL, MONTHLY, WEEKLY, POINT IN TIME). Most metrics are ANNUAL — set this only if you need sub-annual data.'
+	},
+	{
+		key: 'reference_period_desc',
+		name: 'Reference Period',
+		depends: [
+			'year',
+			'source_desc',
+			'sector_desc',
+			'group_desc',
+			'commodity_desc',
+			'statisticcat_desc',
+			'freq_desc'
+		],
+		group: 'when',
+		default: [],
+		description:
+			'The within-year window the metric covers (YEAR, MARKETING YEAR, individual months, or named forecasts like "AUG FORECAST"). Use with Frequency.'
 	}
 ];
 
