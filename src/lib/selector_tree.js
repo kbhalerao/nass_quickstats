@@ -126,6 +126,14 @@ export const selectors = [
 		key: 'state_name',
 		name: 'State',
 		depends: ['year', 'agg_level_desc'],
+		applicable_agg_levels: [
+			'STATE',
+			'COUNTY',
+			'AGRICULTURAL DISTRICT',
+			'ZIP CODE',
+			'AMERICAN INDIAN RESERVATION',
+			'REGION : SUB-STATE'
+		],
 		group: 'where',
 		default: [],
 		description: 'State full name.'
@@ -134,6 +142,7 @@ export const selectors = [
 		key: 'region_desc',
 		name: 'Region',
 		depends: ['year', 'agg_level_desc'],
+		applicable_agg_levels: ['REGION : MULTI-STATE', 'REGION : SUB-STATE'],
 		group: 'where',
 		default: [],
 		description:
@@ -143,6 +152,7 @@ export const selectors = [
 		key: 'county_name',
 		name: 'County',
 		depends: ['agg_level_desc', 'state_name', 'year'],
+		applicable_agg_levels: ['COUNTY'],
 		dependency: 'hard',
 		group: 'where',
 		default: [],
@@ -152,6 +162,7 @@ export const selectors = [
 		key: 'asd_desc',
 		name: 'Ag District',
 		depends: ['agg_level_desc', 'state_name'],
+		applicable_agg_levels: ['AGRICULTURAL DISTRICT'],
 		group: 'where',
 		default: [],
 		description: 'Ag statistics district name.'
@@ -160,6 +171,7 @@ export const selectors = [
 		key: 'zip_5',
 		name: 'Zip code',
 		depends: ['state_name'],
+		applicable_agg_levels: ['ZIP CODE'],
 		group: 'where',
 		default: [],
 		description: 'US Postal Service 5-digit zip code.'
@@ -168,6 +180,7 @@ export const selectors = [
 		key: 'watershed_desc',
 		name: 'Watershed',
 		depends: ['agg_level_desc'],
+		applicable_agg_levels: ['WATERSHED'],
 		group: 'where',
 		default: [],
 		description:
@@ -222,3 +235,24 @@ export const groups = {
 	where: 'Narrow down the geographical extent of your search',
 	when: 'Limit your search to a window of time'
 };
+
+/**
+ * Decide whether a selector should be rendered for the current search state.
+ *
+ * Today the only conditional rule is `applicable_agg_levels`: a geo selector
+ * declares which Geographic Levels it's relevant for, and is hidden until the
+ * user picks a matching one. (E.g., a County picker is meaningless until
+ * agg_level_desc=COUNTY is selected.)
+ *
+ * @param {{ key: string, applicable_agg_levels?: string[] }} selector
+ * @param {Record<string, string[]>} search_params
+ * @returns {boolean}
+ */
+export function isSelectorApplicable(selector, search_params) {
+	if (selector.applicable_agg_levels) {
+		const chosen = search_params['agg_level_desc'] ?? [];
+		if (chosen.length === 0) return false;
+		return selector.applicable_agg_levels.some((l) => chosen.includes(l));
+	}
+	return true;
+}
