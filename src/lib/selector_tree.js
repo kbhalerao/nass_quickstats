@@ -189,10 +189,16 @@ export const selectors = [
 	{
 		key: 'year',
 		name: 'Year',
+		type: 'range',
+		// Values are stored under `year__GE` and `year__LE` rather than `year`,
+		// using NASS modifier suffixes. The cascade still treats `year` as the
+		// base param (see baseParam in search.js).
+		range_keys: ['year__GE', 'year__LE'],
 		depends: null,
 		default: [],
 		group: 'when',
-		description: 'Years'
+		description:
+			'Inclusive year range. NASS data goes back to 1850 — use this instead of picking individual years.'
 	},
 	{
 		key: 'freq_desc',

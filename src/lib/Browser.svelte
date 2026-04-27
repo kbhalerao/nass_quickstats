@@ -4,6 +4,7 @@
 	import Chooser from './Chooser.svelte';
 	import Counter from './Counter.svelte';
 	import HR from './HR.svelte';
+	import RangeChooser from './RangeChooser.svelte';
 	import Table from './Table.svelte';
 	import { decodeHash, encodeHash } from './url_state.js';
 
@@ -52,7 +53,11 @@
 		<HR text={groups[group]} />
 		<div class="grid gap-3 grid-cols-[repeat(auto-fill,minmax(360px,1fr))]">
 			{#each selectors.filter((s) => s.group === group && isSelectorApplicable(s, search_params)) as selector (selector.key)}
-				<Chooser {selector} updater={update_search_params} bind:search_params />
+				{#if selector.type === 'range'}
+					<RangeChooser {selector} bind:search_params />
+				{:else}
+					<Chooser {selector} updater={update_search_params} bind:search_params />
+				{/if}
 			{/each}
 		</div>
 	{/each}
