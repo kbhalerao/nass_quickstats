@@ -36,15 +36,15 @@
 		<caption>Params {make_caption(search_params)}, showing up to 10 rows</caption>
 		<thead>
 			<tr>
-				{#each header as th}
+				{#each header as th, i (i)}
 					<th>{th.replaceAll('"', '')}</th>
 				{/each}
 			</tr>
 		</thead>
 		<tbody>
-			{#each body as tr}
+			{#each body as tr, i (i)}
 				<tr>
-					{#each tr.split('","') as td}
+					{#each tr.split('","') as td, j (j)}
 						<td>{td.replaceAll('"', '')}</td>
 					{/each}
 				</tr>

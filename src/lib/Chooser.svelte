@@ -1,26 +1,20 @@
 <script>
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { buildSearchString } from './search.js';
 
 	let { selector, updater, search_params = $bindable() } = $props();
 	let choices = $state(['Wait']);
-	let selection = $state(selector.default ?? []);
+	// svelte-ignore state_referenced_locally
+	let selection = $state(selector.default ? [...selector.default] : []);
 	let tooltip = $derived(`${selector.description}. Depends on ${selector.depends?.join(', ')}`);
 
-	const makeSearchString = (search) => {
-		const pars = new URLSearchParams();
-		for (const key of Object.keys(search)) {
-			if (search[key].length && selector.depends?.indexOf(key) > -1) {
-				for (const v of search[key]) {
-					pars.append(key, v);
-				}
-			}
-		}
-		pars.append('param', selector.key);
-		return pars.toString();
-	};
-
-	let search_string = $derived(makeSearchString(search_params));
+	let search_string = $derived(
+		buildSearchString(search_params, {
+			only: selector.depends ?? [],
+			extra: { param: selector.key }
+		})
+	);
 
 	$effect(() => {
 		get_choices(search_string);

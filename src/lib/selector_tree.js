@@ -126,7 +126,7 @@ export const selectors = [
 	{
 		key: 'asd_desc',
 		name: 'Ag District',
-		depends: ['agg_level_desc', 'state'],
+		depends: ['agg_level_desc', 'state_name'],
 		group: 'where',
 		default: [],
 		description: 'Ag statistics district name.'

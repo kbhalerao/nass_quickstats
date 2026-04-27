@@ -1,21 +1,11 @@
 <script>
+	import { clickToCopy } from './clickToCopy.js';
+	import { buildSearchString } from './search.js';
+
 	const MAX_RECORDS = 50000;
 	let { search_params, table = $bindable() } = $props();
-	import { clickToCopy } from './clickToCopy.js';
 
-	const makeSearchString = (sp) => {
-		let str = new URLSearchParams();
-		for (const key of Object.keys(sp)) {
-			if (sp[key].length) {
-				for (const v of sp[key]) {
-					str.append(key, v);
-				}
-			}
-		}
-		return str.toString();
-	};
-
-	let searchstring = $derived(makeSearchString(search_params));
+	let searchstring = $derived(buildSearchString(search_params));
 
 	const get_count = async (search) => {
 		const res = await fetch(`/api/counts?${search}`);

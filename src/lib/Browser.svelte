@@ -9,14 +9,13 @@
 	let search_params = $state({});
 
 	const update_search_params = (key, selection) => {
-		console.log({ key, selection });
 		search_params[key] = selection;
 	};
 </script>
 
 <div class="container">
 	<Counter {search_params} bind:table />
-	{#each ['what', 'where', 'when'] as group}
+	{#each ['what', 'where', 'when'] as group (group)}
 		<HR text={groups[group]} />
 		<div class="flex flex-wrap">
 			{#each selectors.filter((s) => s.group === group) as selector (selector.key)}
@@ -26,10 +25,10 @@
 	{/each}
 </div>
 {#if table?.length}
-	<HR text={'Retrieve data'} />
+	<HR text="Retrieve data" />
 	<div class="container">
 		<Table {search_params} {table} />
 	</div>
 {:else}
-	<HR text={'Data will appear below'} />
+	<HR text="Data will appear below" />
 {/if}
