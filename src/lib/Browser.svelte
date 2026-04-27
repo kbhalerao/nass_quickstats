@@ -46,7 +46,7 @@
 {#if table?.length}
 	<HR text="Retrieve data" />
 	<div class="max-w-screen-2xl mx-auto">
-		<Table {search_params} {table} />
+		<Table {table} />
 	</div>
 {:else}
 	<HR text="Data will appear below" />
