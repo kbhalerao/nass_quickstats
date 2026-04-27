@@ -5,6 +5,7 @@
 	import Counter from './Counter.svelte';
 	import HR from './HR.svelte';
 	import RangeChooser from './RangeChooser.svelte';
+	import StatisticUnitChooser from './StatisticUnitChooser.svelte';
 	import Table from './Table.svelte';
 	import { decodeHash, encodeHash } from './url_state.js';
 
@@ -55,6 +56,8 @@
 			{#each selectors.filter((s) => s.group === group && isSelectorApplicable(s, search_params)) as selector (selector.key)}
 				{#if selector.type === 'range'}
 					<RangeChooser {selector} bind:search_params />
+				{:else if selector.type === 'composite' && selector.key === 'statisticcat_desc'}
+					<StatisticUnitChooser {selector} bind:search_params />
 				{:else}
 					<Chooser {selector} updater={update_search_params} bind:search_params />
 				{/if}

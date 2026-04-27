@@ -63,7 +63,12 @@ export const selectors = [
 	},
 	{
 		key: 'statisticcat_desc',
-		name: 'Category',
+		name: 'Statistic',
+		type: 'composite',
+		// This selector renders the (statisticcat_desc, unit_desc) pair as one
+		// control. unit is determined by statistic; presenting them separately
+		// duplicated decisions and made invalid combinations expressible.
+		composite_keys: ['statisticcat_desc', 'unit_desc'],
 		depends: [
 			'year',
 			'source_desc',
@@ -77,9 +82,10 @@ export const selectors = [
 		group: 'what',
 		default: [],
 		description:
-			'The aspect of a commodity being measured (e.g., AREA HARVESTED, PRICE RECEIVED, INVENTORY, SALES).'
+			'The aspect of a commodity being measured, paired with its unit (e.g., AREA HARVESTED in ACRES, PRICE RECEIVED in $ / BU).'
 	},
 	{
+		// Rendered as part of the statisticcat_desc composite — see composite_keys above.
 		key: 'unit_desc',
 		name: 'Units',
 		depends: ['statisticcat_desc'],
@@ -243,6 +249,17 @@ export const groups = {
 };
 
 /**
+ * Keys that are managed by a composite selector and therefore should not be
+ * rendered as standalone Choosers. (E.g. unit_desc is rendered as part of the
+ * statisticcat_desc composite.)
+ */
+export const composite_owned_keys = new Set(
+	selectors
+		.filter((s) => s.type === 'composite')
+		.flatMap((s) => (s.composite_keys ?? []).filter((k) => k !== s.key))
+);
+
+/**
  * Decide whether a selector should be rendered for the current search state.
  *
  * Today the only conditional rule is `applicable_agg_levels`: a geo selector
@@ -255,6 +272,7 @@ export const groups = {
  * @returns {boolean}
  */
 export function isSelectorApplicable(selector, search_params) {
+	if (composite_owned_keys.has(selector.key)) return false;
 	if (selector.applicable_agg_levels) {
 		const chosen = search_params['agg_level_desc'] ?? [];
 		if (chosen.length === 0) return false;
