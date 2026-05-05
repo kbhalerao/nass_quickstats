@@ -43,7 +43,7 @@
 			try {
 				const stats_res = await fetchOptions(qs);
 				if (cancelled) return;
-				const stats = stats_res['statisticcat_desc'] ?? [];
+				const stats = [...new Set(stats_res['statisticcat_desc'] ?? [])];
 
 				if (stats.length > MAX_FETCH_PAIRS) {
 					// Too many to enumerate units for. Show stats only; user must
@@ -60,7 +60,7 @@
 						extra: { param: 'unit_desc', statisticcat_desc: stat }
 					});
 					const r = await fetchOptions(u_qs);
-					return r['unit_desc'] ?? [];
+					return [...new Set(r['unit_desc'] ?? [])];
 				});
 				if (cancelled) return;
 

@@ -39,7 +39,7 @@
 		fetchOptions(qs)
 			.then((res) => {
 				if (cancelled) return;
-				choices = res[selector.key] ?? [];
+				choices = [...new Set(res[selector.key] ?? [])];
 				const valid = new Set(choices);
 				const trimmed = selection.filter((s) => valid.has(s));
 				if (trimmed.length !== selection.length) {
