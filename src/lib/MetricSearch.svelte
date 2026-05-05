@@ -19,7 +19,7 @@
 		'short_desc'
 	]);
 
-	let { search_params = $bindable() } = $props();
+	let { search_params = $bindable(), setupFromMetric, busy = false } = $props();
 
 	let query = $state('');
 	/** @type {string[]} */
@@ -111,12 +111,16 @@
 		};
 	});
 
-	function pick(short_desc) {
+	async function pick(short_desc) {
 		selected = short_desc;
-		search_params['short_desc'] = [short_desc];
 		query = '';
 		results = [];
 		open = false;
+		if (setupFromMetric) {
+			await setupFromMetric(short_desc);
+		} else {
+			search_params['short_desc'] = [short_desc];
+		}
 	}
 
 	function clear() {
@@ -132,9 +136,16 @@
 		>
 			<span class="text-xs font-semibold text-blue-800 uppercase tracking-wide">Metric:</span>
 			<span class="font-mono text-sm text-blue-900">{selected}</span>
+			{#if busy}
+				<span
+					class="inline-block h-3.5 w-3.5 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"
+					aria-hidden="true"
+				></span>
+			{/if}
 			<button
 				type="button"
-				class="ml-auto text-xs text-blue-700 hover:text-blue-900 underline"
+				class="ml-auto text-xs text-blue-700 hover:text-blue-900 underline disabled:opacity-40"
+				disabled={busy}
 				onclick={clear}>change</button
 			>
 		</div>
